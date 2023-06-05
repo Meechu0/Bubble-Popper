@@ -12,6 +12,23 @@ public class GameManager : MonoBehaviour
     public int gameTime = 60;
     public GameBoard gameBoard;
 
+    [SerializeField]
+    private TextMeshProUGUI restartText;
+
+    private bool isGameOver = false;
+
+    private void Update()
+    {
+        // check if game is over ( no more moves )
+        if (isGameOver)
+        {
+            if (Input.GetKeyDown(KeyCode.R))  // listen for r key
+            {
+                RestartGame();
+            }
+        }
+    }
+
     private void Start()
     {
         
@@ -22,6 +39,7 @@ public class GameManager : MonoBehaviour
     // BubbleClicked - called when one of the bubble is clicked
     public void BubbleClicked(GameObject bubble)
     {
+        if (isGameOver) return; // return if game is over
         // check if bubble can be clicked
         if (gameBoard.CanBubbleBeClicked(bubble))
         {
@@ -45,6 +63,8 @@ public class GameManager : MonoBehaviour
         if (!gameBoard.AreMatchingPairsLeft())                                        // check for remaining moves - are there any pairs left?
         {
             Debug.Log("Game Over - No more matching pairs left");                     // if not - debug log
+            restartText.gameObject.SetActive(true);
+            isGameOver = true;
         }
     }
 
@@ -72,5 +92,18 @@ public class GameManager : MonoBehaviour
         else if (count <= 10) return count * 2;
         else if (count <= 18) return count * 3;
         else return count * 4;
+    }
+
+    private void RestartGame()
+    {
+        isGameOver = false;
+        score = 0;
+        gameTime = 60;
+        gameBoard.RestartBoard();  // call the RestartBoard method of the GameBoard
+
+        // hide restart text and update the UI
+        restartText.gameObject.SetActive(false);
+        UpdateScore();
+        StartCoroutine(StartGameTimer());
     }
 }

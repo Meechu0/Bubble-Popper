@@ -220,4 +220,33 @@ public void DropBubbles()
         }
         return true;
     }
+
+    public void RestartBoard()
+    {
+        // clear the grid and destroy all existing bubbles
+        for (int y = 0; y < gridHeight; y++)
+        {
+            for (int x = 0; x < gridWidth; x++)
+            {
+                if (grid[x, y] != null)
+                {
+                    Destroy(grid[x, y]);
+                    grid[x, y] = null;
+                }
+            }
+        }
+
+        // instantiate new bubbles and populate the grid
+        for (int y = 0; y < gridHeight; y++)
+        {
+            for (int x = 0; x < gridWidth; x++)
+            {
+                GameObject bubble = Instantiate(bubblePrefabs[Random.Range(0, bubblePrefabs.Length)], new Vector3(x, y, 0), Quaternion.identity);
+                grid[x, y] = bubble;
+                bubble.GetComponent<Bubble>().gameManager = FindObjectOfType<GameManager>();
+                targetPositions[x, y] = new Vector3(x, y, 0);
+            }
+        }
+    }
+
 }
